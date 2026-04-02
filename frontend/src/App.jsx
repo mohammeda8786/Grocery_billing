@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 
+const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const normalizedApiUrl = rawApiUrl.replace(/\/$/, '').replace(/\/api$/, '');
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  baseURL: `${normalizedApiUrl}/api`,
   timeout: 8000,
 });
 
@@ -49,7 +51,7 @@ function App() {
     try {
       setLoading(true);
       setError('');
-      const response = await api.get('/api/products');
+      const response = await api.get('/products');
       setProducts(response.data);
     } catch (err) {
       console.error(err);
@@ -183,6 +185,12 @@ function App() {
       return;
     }
 
+    const whatsappWindow = window.open('', '_blank');
+    if (!whatsappWindow) {
+      setError('Unable to open WhatsApp. Please allow popups and try again.');
+      return;
+    }
+
     try {
       setLoading(true);
       const payload = {
@@ -202,9 +210,11 @@ function App() {
       const response = await api.post('/send-bill', payload);
       const whatsappLink = response.data.whatsappLink;
       setStatus('Bill ready. Opening WhatsApp...');
-      window.open(whatsappLink, '_blank');
+      whatsappWindow.location.href = whatsappLink;
     } catch (err) {
-      setError(err?.response?.data?.message || 'Unable to send bill.');
+      console.error(err);
+      if (whatsappWindow && !whatsappWindow.closed) whatsappWindow.close();
+      setError(err?.response?.data?.message || err.message || 'Unable to send bill.');
     } finally {
       setLoading(false);
     }
