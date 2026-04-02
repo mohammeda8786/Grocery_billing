@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 
-const rawApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-const normalizedApiUrl = rawApiUrl.replace(/\/$/, '').replace(/\/api$/, '');
+const rawApiUrl = import.meta.env.VITE_API_URL?.trim();
+const normalizedApiUrl = rawApiUrl
+  ? rawApiUrl.replace(/\/$/, '').replace(/\/api$/, '')
+  : null;
 const api = axios.create({
-  baseURL: `${normalizedApiUrl}/api`,
+  baseURL: normalizedApiUrl ? `${normalizedApiUrl}/api` : '/api',
   timeout: 8000,
 });
 
