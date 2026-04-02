@@ -49,9 +49,10 @@ function App() {
     try {
       setLoading(true);
       setError('');
-      const response = await api.get('/products');
+      const response = await api.get('/api/products');
       setProducts(response.data);
     } catch (err) {
+      console.error(err);
       setError('Unable to load products.');
     } finally {
       setLoading(false);

@@ -6,5 +6,5 @@ yarn-error.log*
 .env
 venv/
 **/node_modules/
-# frontend/dist
+frontend/dist
 **/.DS_Store
